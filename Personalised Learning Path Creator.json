@@ -1,0 +1,203 @@
+{
+  "name": "Personalised Learning Path Creator",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Priyanka. What do you want to learn today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        0
+      ],
+      "id": "87ca223d-8c95-4099-a44c-bbea9e406522",
+      "name": "When chat message received",
+      "webhookId": "0344d81d-644a-4b99-9422-374ac8cf4c21"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a personalized learning path for: {{ $json.chatInput }}\n\nIMPORTANT:\n- First use the search_learning_resources tool\n- Then store each learning step in Notion using the create_learning_tasks tool",
+        "options": {
+          "systemMessage": "=You are an AI learning assistant.\n\nYour goal is to create a structured learning path for a given skill and store it in a Notion task tracker database.\n\nSTRICT RULES:\n1. You MUST use the tool \"search_learning_resources\" exactly ONCE.\n2. Do NOT call the search tool more than once.\n3. After retrieving results, analyze them and create a learning plan.\n4. Do NOT generate final output as text.\n5. You MUST use the tool \"create_learning_tasks\" to store each learning step.\n\nTOOL USAGE:\n- Each learning step must be added as a separate task.\n- Call \"create_learning_tasks\" once per step.\n\nTOOL INPUT FORMAT (VERY IMPORTANT):\n\nWhen calling the tool, you MUST fill in all the Notion (tool \"create_learning_tasks\") database (url: \"https://www.notion.so/32f50c3944b980318974f795c69159ff?v=32f50c3944b98049a1fc000c80ff4f5a&source=copy_link\") columns:\n{\n  \"Task name\": \"Sub-topic name\",\n  \"Status\": \"Not Started\",\n  \"Assignee\": \"Me\",\n  \"Due date\": \"DD-MM-YYYY\",\n  \"Priority\": \"Low | Medium | High\",\n  \"Description\": \"Clear explanation of the learning task\",\n  \"Effort level\": \"Small | Medium | Large\"\n}\n\nFIELD GUIDELINES:\n- Task name → actual topic (NOT Step 1)\n- Description → clear learning instruction\n- Due date → in relative format like it could be within the next few weeks\n- status → ALWAYS \"Not Started\"\n- Priority:\n  - High → important foundational steps\n  - Medium → standard learning steps\n  - Low → optional or advanced topics\n- Effort level:\n  - Large → complex topics (e.g., deep learning, projects)\n  - Medium → moderate difficulty\n  - Small → basic concepts\n- assignee → ALWAYS \"Me\"\n\nOTHER RULES:\n- Create 8–10 steps maximum\n- Do NOT loop or repeat tool calls\n- Do NOT skip tool usage\n\nIMPORTANT:\n- Do NOT return JSON as final output\n- Do NOT return plain text\n- ONLY use tools to complete the task"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "da6081ff-7d18-4845-90b5-a60576c6e464",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-nano-30b-a3b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        208
+      ],
+      "id": "4b5ef244-a54f-4096-830b-3ef31be2e704",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "YyXskfaF0bjcH0tZ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        272
+      ],
+      "id": "a77a60ff-acab-427b-abe9-d64f28cd58a2",
+      "name": "SerpAPI for searching learning resources",
+      "credentials": {
+        "serpApi": {
+          "id": "UygLLzXPDqYOcXaP",
+          "name": "SerpAPI account 3"
+        }
+      },
+      "notes": "Use this tool to search for tutorials, courses, and learning resources."
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create existing tasks in a Notion task tracker database.\n\nThis tool is used to modify and populate all relevant fields of a task, including task name, description, status, priority, assignee, due date, and effort level.\n\nEach update represents one step in a personalized learning path, ensuring that all task properties are accurately filled and aligned with the learning workflow.",
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "32f50c39-44b9-8031-8974-f795c69159ff",
+          "mode": "list",
+          "cachedResultName": "Tasks Tracker",
+          "cachedResultUrl": "https://www.notion.so/32f50c3944b980318974f795c69159ff"
+        },
+        "title": "={{ $json.chatInput }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Task name|title",
+              "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('propertyValues0_Title', ``, 'string') }}"
+            },
+            {
+              "key": "Description|rich_text",
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('propertyValues1_Text', ``, 'string') }}"
+            },
+            {
+              "key": "Due date|date",
+              "includeTime": false,
+              "date": "2026-04-29T14:31:35",
+              "timezone": "Asia/Kolkata"
+            },
+            {
+              "key": "Effort level|select",
+              "selectValue": "Medium"
+            },
+            {
+              "key": "Status|status",
+              "statusValue": "Not started"
+            },
+            {
+              "key": "Assignee|people",
+              "peopleValue": [
+                "9fe974ed-ad09-45c6-8fce-ffcdd934d27c"
+              ]
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "High"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        192
+      ],
+      "id": "00822b2f-b5bd-4a0d-9ec4-88b44781b3a3",
+      "name": "create_learning_tasks",
+      "credentials": {
+        "notionApi": {
+          "id": "PsgtIwNsmXCXa81f",
+          "name": "Notion account 6"
+        }
+      },
+      "notes": "Create tasks in a Notion database with step details, priority, effort level, and assignment information."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI for searching learning resources": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_learning_tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "723d81f7-a604-421f-90be-3776b03801d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c76cbd41aac0dfc1d3fc04431354ea8db1c7d28d2aab6034aa40ae73cdec24d6"
+  },
+  "id": "sGwBmoO0cbAhtG9G",
+  "tags": []
+}
