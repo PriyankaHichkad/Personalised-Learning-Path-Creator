@@ -34,21 +34,14 @@ The goal of this project is to:
 
 ---
 
-# Introduction
-Learning a new skill often involves searching through multiple resources, identifying relevant topics, and structuring them into a proper roadmap. This process can be time-consuming and unstructured.
-
-This project was developed to solve this problem by automating the creation of personalized learning paths. By leveraging AI agents and workflow automation, the system takes a skill as input, researches relevant resources, and generates a structured plan with actionable steps.
-
-The output is directly stored in Notion as a task tracker, making it practical and easy to follow.
-
----
-
 ## Workflow Architecture
+
 The workflow follows this pipeline:
 Chat Trigger → AI Agent → (Search Tool + Notion Tool)
 
 ### 1. User Input
 The workflow begins when the user provides a **skill to learn** through the chat trigger node.
+
 Example input: Machine Learning
 
 ### 2. Main AI Agent
@@ -63,6 +56,7 @@ The AI agent is powered by a chat model that enables it to:
 
 ### 4. Web Search Tool (SerpAPI)
 The AI agent uses the **SerpAPI** tool to perform web searches and gather relevant learning resources.
+
 This ensures that the generated learning path is based on up-to-date and high-quality content.
 
 ### 5. Learning Path Generation
@@ -74,6 +68,7 @@ After collecting relevant information, the AI agent generates a structured learn
 
 ### 6. Notion Integration
 The generated learning tasks are automatically stored in a Notion task tracker database.
+
 Each task includes:
 - Task Name (sub-topic)  
 - Description  
@@ -130,8 +125,6 @@ The demonstration includes:
 
 # Workflow File
 
-**Workflow JSON File**
-
 The repository contains the exported workflow JSON file.
 
 Steps to use:
@@ -146,17 +139,13 @@ This allows easy replication of the project.
 
 # Challenges Faced
 
-### AI Agent Not Using Tools
-Initially, the AI agent generated responses without calling tools. This was resolved by refining system prompts and tool descriptions.
+**AI Agent Not Using Tools** - Initially, the AI agent generated responses without calling tools. This was resolved by refining system prompts and tool descriptions.
 
-### Schema Mismatch Errors
-The Notion node produced errors due to mismatched input formats. This was solved by simplifying the AI output and handling structured fields within n8n.
+**Schema Mismatch Errors** - The Notion node produced errors due to mismatched input formats. This was solved by simplifying the AI output and handling structured fields within n8n.
 
-### API Integration Issues
-Authentication errors occurred with external APIs. Proper credential configuration resolved these issues.
+**API Integration Issues** - Authentication errors occurred with external APIs. Proper credential configuration resolved these issues.
 
-### Handling Multiple Fields
-Passing too many fields through the AI caused failures. The solution was to limit AI output and map fields within the workflow.
+**Handling Multiple Fields** - Passing too many fields through the AI caused failures. The solution was to limit AI output and map fields within the workflow.
 
 ---
 
